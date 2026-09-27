@@ -42,5 +42,22 @@ Aplikacija zaradi varnostnih omejitev brskalnika **ne more sama pisati** v GitHu
 4. Če želiš podatke tudi na Google Drive: isto mapo, kamor shranjuješ JSON, nastavi kot mapo, ki jo sinhronizira **Google Drive for Desktop** – tako dobiš kopijo v oblaku popolnoma samodejno, brez ročnega nalaganja po spletu.
 5. Ob naslednjem odprtju aplikacije (na drugem računalniku ali po brisanju predpomnilnika brskalnika) v Nastavitvah uporabi **"Uvozi JSON"** in izberi svojo shranjeno datoteko – vsi podatki se povrnejo.
 
+## 3) Gumb "⚙ Admin" – neposredno shranjevanje iz aplikacije
+Zgoraj desno je gumb **Admin**, kjer nastaviš tri neodvisne načine shranjevanja (lahko uporabiš enega, dva ali vse tri). Token/ključi se shranijo samo lokalno v tvojem brskalniku, ločeno od izvožene baze, in se nikoli ne delijo nikamor drugam.
+
+### GitHub (zaseben repozitorij) – priporočeno
+1. Na GitHub pojdi na **Settings → Developer settings → Personal access tokens → Fine-grained tokens** in ustvari nov token z dostopom samo do svojega zasebnega repozitorija (npr. `kosarka-os-data`) in pravico **Contents: Read and write**.
+2. V Adminu vpiši token, uporabniško ime, ime repozitorija, vejo (`main`) in pot do datoteke (npr. `kosarka_baza.json`).
+3. Klikni **"Shrani nastavitve"**, nato **"Naloži bazo na GitHub zdaj"** – aplikacija samodejno prebere obstoječo datoteko (če obstaja) in jo posodobi neposredno prek GitHub API (brez git ukazov, brez GitHub Desktop).
+
+### Mapa na tem računalniku
+Klikni **"Izberi mapo"** (deluje v Chrome/Edge – uporablja File System Access API) in nato **"Shrani bazo v mapo zdaj"** – datoteka `kosarka_baza.json` se zapiše neposredno v izbrano mapo na tvojem disku (lahko izbereš mapo, ki jo sinhronizira Google Drive for Desktop, in imaš s tem tudi samodejno kopijo v oblaku). Po vsakem ponovnem nalaganju strani je treba mapo znova izbrati (brskalniška varnostna omejitev).
+
+### Google Drive (neposredno prek API-ja)
+To zahteva tvoj lasten Google Cloud projekt (ker Google zahteva registracijo vsake aplikacije):
+1. V [Google Cloud Console](https://console.cloud.google.com/) ustvari projekt, omogoči **Google Drive API** in ustvari **OAuth 2.0 Client ID** tipa "Web application".
+2. Med "Authorized JavaScript origins" dodaj naslov, kjer bo aplikacija gostovana (npr. `https://<uporabnik>.github.io`).
+3. V Adminu vnesi ta Client ID, klikni **"Prijava v Google"** (odpre se Googlovo okno za prijavo/dovoljenje), nato **"Shrani bazo na Drive"** – datoteka se naloži v tvoj Google Drive (vsak klik ustvari novo datoteko `kosarka_baza.json`, ker preprosta različica ne preverja/prepisuje obstoječe).
+
 ## Opomba
 Ker gre za samostojno stran brez strežnika, si podatki niso deljeni med različnimi napravami/brskalniki avtomatsko – zato je zgornji izvoz/uvoz + git commit trenutno edini zanesljiv način za varnostno kopijo in prenos podatkov med napravami.

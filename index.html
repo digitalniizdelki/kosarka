@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Košarka OS – Zapisnik tekme</title>
+<style>
+:root{
+  --bg:#0f1420;--bg2:#171f31;--card:#1c2438;--txt:#eef1f8;--muted:#8b95ab;
+  --accent:#ff7a1a;--accent2:#2b8cff;--good:#2ecc71;--bad:#ff4d5e;--line:#2a3350;
+  --r:14px;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+:root[data-theme="light"]{--bg:#f3f5fa;--bg2:#ffffff;--card:#ffffff;--txt:#161a22;--muted:#657;--line:#e2e6f0;}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--txt);font-family:'Segoe UI',system-ui,Arial,sans-serif;min-height:100%}
+header{position:sticky;top:0;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg2);border-bottom:1px solid var(--line);padding:10px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+header h1{font-size:16px;margin:0;font-weight:700;letter-spacing:.5px}
+header h1 span{color:var(--accent)}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto}
+.tab{padding:7px 14px;border-radius:20px;background:var(--bg);border:1px solid var(--line);color:var(--muted);cursor:pointer;font-size:13px}
+.tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.iconbtn{background:var(--bg);border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:7px 10px;cursor:pointer;font-size:13px}
+main{max-width:1200px;margin:0 auto;padding:16px;overflow-x:hidden}
+.view{display:none}.view.active{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-bottom:14px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media(max-width:760px){.grid2,.grid3{grid-template-columns:1fr}}
+.scorebar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.teamblock{flex:1;min-width:150px;text-align:center}
+.teamblock input.tname{background:transparent;border:none;color:var(--txt);font-size:18px;font-weight:700;text-align:center;width:100%}
+.score{font-size:52px;font-weight:800;margin:4px 0}
+.scorebtns{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.scorebtns button{width:38px;height:34px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--txt);font-weight:700;cursor:pointer}
+.clockwrap{text-align:center;min-width:180px}
+.clock{font-size:46px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--accent)}
+.qpill{display:inline-block;background:var(--bg);border:1px solid var(--line);border-radius:20px;padding:4px 14px;margin-bottom:6px;font-size:13px}
+.clockbtns{display:flex;gap:6px;justify-content:center;margin-top:6px;flex-wrap:wrap}
+.clockbtns button{padding:8px 12px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--txt);cursor:pointer;font-size:13px}
+.clockbtns button.primary{background:var(--good);color:#fff;border-color:var(--good)}
+.clockbtns button.stop{background:var(--bad);color:#fff;border-color:var(--bad)}
+h3{margin:0 0 10px;font-size:14px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{padding:8px 12px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--txt);cursor:pointer;font-size:12.5px}
+.chip:hover{border-color:var(--accent)}
+select,input,textarea{background:var(--bg);border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:7px 9px;font-size:13px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:left}
+th{color:var(--muted);font-weight:600;font-size:11px;text-transform:uppercase}
+.logtable{max-height:340px;overflow-y:auto;overflow-x:auto}
+.tag{padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600}
+.tag.foul{background:rgba(255,77,94,.15);color:var(--bad)}
+.tag.ref{background:rgba(43,140,255,.15);color:var(--accent2)}
+.tag.pts{background:rgba(46,204,113,.15);color:var(--good)}
+.tag.other{background:rgba(139,149,171,.15);color:var(--muted)}
+.rowbtn{background:none;border:none;color:var(--bad);cursor:pointer;font-size:15px}
+.playerlist{max-height:260px;overflow-y:auto}
+.plrow{display:flex;gap:6px;align-items:center;padding:5px 0;border-bottom:1px solid var(--line);font-size:13px}
+.plrow input{width:34px;text-align:center}
+.plrow .pname{flex:1}
+.smallbtn{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:12.5px}
+.ghostbtn{background:transparent;border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:6px 10px;cursor:pointer;font-size:12.5px}
+.dangerbtn{background:var(--bad);color:#fff;border:none;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:12.5px}
+label.f{display:block;font-size:12px;color:var(--muted);margin-bottom:3px}
+.field{margin-bottom:10px}
+.standings tr.top3{background:rgba(255,122,26,.06)}
+footer{text-align:center;color:var(--muted);font-size:11.5px;padding:18px}
+.foulbar{display:flex;gap:4px;margin-top:4px}
+.foulbar span{width:14px;height:14px;border-radius:3px;background:var(--line)}
+.foulbar span.on{background:var(--bad)}
+@media print{
+  header,.tabs,footer,.chips,.clockbtns,#customEv,button,select,.iconbtn,input[type=file]{display:none!important}
+  body{background:#fff!important;color:#000!important}
+  .card{border:1px solid #ccc!important;background:#fff!important;box-shadow:none!important}
+  .view{display:none!important}
+  .view.printing{display:block!important}
+}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:50;display:none;align-items:flex-start;justify-content:center;padding:30px 12px;overflow-y:auto}
+.modal-overlay.open{display:flex}
+.modal{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;max-width:560px;width:100%}
+.modal h2{margin:0 0 12px;font-size:17px}
+.modal .sec{border-top:1px solid var(--line);padding-top:14px;margin-top:14px}
+.modal .sec h4{margin:0 0 8px;font-size:13px;color:var(--accent)}
+.statusline{font-size:12px;color:var(--muted);margin-top:4px}
+</style>
+</head>
+<body>
+<header>
+  <h1>🏀 Košarka<span>OS</span></h1>
+  <div class="tabs">
+    <div class="tab active" data-v="tekma">Tekma v teku</div>
+    <div class="tab" data-v="sezona">Sezona / Lestvica</div>
+    <div class="tab" data-v="ekipe">Ekipe in igralci</div>
+    <div class="tab" data-v="arhiv">Arhiv tekem</div>
+    <div class="tab" data-v="nastavitve">Nastavitve</div>
+  </div>
+  <button class="iconbtn" id="adminBtn" onclick="openAdmin()">⚙ Admin</button>
+  <button class="iconbtn" id="themeBtn">🌓</button>
+</header>
+
+<div class="modal-overlay" id="adminModal">
+  <div class="modal">
+    <h2>⚙ Admin – shranjevanje podatkov</h2>
+    <p class="statusline">Podatki (token/ključi) se shranjujejo samo lokalno v tem brskalniku (ločeno od izvožene baze) – nikoli se ne delijo nikamor drugam razen na cilj, ki ga izbereš spodaj.</p>
+
+    <div class="sec">
+      <h4>🐙 GitHub (zaseben repozitorij)</h4>
+      <div class="field"><label class="f">Personal Access Token (scope: repo)</label><input type="password" id="ghToken" style="width:100%"></div>
+      <div class="grid3">
+        <div class="field"><label class="f">Uporabnik/organizacija</label><input id="ghOwner" style="width:100%"></div>
+        <div class="field"><label class="f">Repozitorij</label><input id="ghRepo" style="width:100%"></div>
+        <div class="field"><label class="f">Veja</label><input id="ghBranch" value="main" style="width:100%"></div>
+      </div>
+      <div class="field"><label class="f">Pot do datoteke v repozitoriju</label><input id="ghPath" value="kosarka_baza.json" style="width:100%"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="ghostbtn" onclick="saveGithubSettings()">Shrani nastavitve</button>
+        <button class="smallbtn" onclick="githubSync()">📤 Naloži bazo na GitHub zdaj</button>
+      </div>
+      <div class="statusline" id="ghStatus"></div>
+    </div>
+
+    <div class="sec">
+      <h4>📁 Mapa na tem računalniku</h4>
+      <p class="statusline">Deluje v Chrome/Edge. Po vsaki ponovni namestitvi strani je treba mapo izbrati znova.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="ghostbtn" onclick="pickFolder()">📁 Izberi mapo</button>
+        <button class="smallbtn" onclick="saveToFolder()">💾 Shrani bazo v mapo zdaj</button>
+      </div>
+      <div class="statusline" id="folderStatus">Mapa ni izbrana.</div>
+    </div>
+
+    <div class="sec">
+      <h4>☁️ Google Drive</h4>
+      <p class="statusline">Potrebuješ svoj Google Cloud OAuth Client ID (Drive API omogočen, tvoja GitHub Pages domena dodana med dovoljene izvore).</p>
+      <div class="field"><label class="f">OAuth Client ID</label><input id="gdClientId" style="width:100%"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="ghostbtn" onclick="gdLogin()">Prijava v Google</button>
+        <button class="smallbtn" onclick="gdSave()">☁️ Shrani bazo na Drive</button>
+      </div>
+      <div class="statusline" id="gdStatus">Ni prijave.</div>
+    </div>
+
+    <div class="sec" style="text-align:right">
+      <button class="ghostbtn" onclick="closeAdmin()">Zapri</button>
+    </div>
+  </div>
+</div>
+
+<main>
+<!-- TEKMA -->
+<div class="view active" id="v-tekma">
+  <div class="card">
+    <h3>Podatki o tekmi</h3>
+    <div class="grid3">
+      <div class="field"><label class="f">Datum</label><input type="date" id="miDate" style="width:100%"></div>
+      <div class="field"><label class="f">Ura začetka</label><input type="time" id="miTime" style="width:100%"></div>
+      <div class="field"><label class="f">Kraj / dvorana</label><input id="miPlace" style="width:100%"></div>
+      <div class="field"><label class="f">Tekmovanje / krog</label><input id="miComp" style="width:100%"></div>
+      <div class="field"><label class="f">Sodnika</label><input id="miRefs" style="width:100%"></div>
+      <div class="field"><label class="f">Delegat</label><input id="miDeleg" style="width:100%"></div>
+      <div class="field"><label class="f">Zapisnikar</label><input id="miScorer" style="width:100%"></div>
+      <div class="field"><label class="f">Trener – domači</label><input id="miCoachH" style="width:100%"></div>
+      <div class="field"><label class="f">Trener – gostje</label><input id="miCoachA" style="width:100%"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="scorebar">
+      <div class="teamblock">
+        <input class="tname" id="homeName" value="Domači">
+        <div class="score" id="homeScore">0</div>
+        <div class="scorebtns">
+          <button onclick="addPts('home',1)">+1</button><button onclick="addPts('home',2)">+2</button><button onclick="addPts('home',3)">+3</button><button onclick="addPts('home',-1)">−1</button>
+        </div>
+        <div style="margin-top:6px;font-size:12px;color:var(--muted)">Timeouti: <span id="homeTO">0</span> <button class="ghostbtn" onclick="timeout('home')">Time-out</button></div>
+      </div>
+      <div class="clockwrap">
+        <div class="qpill" id="qPill">1. četrtina</div>
+        <div class="clock" id="clockDisp">10:00</div>
+        <div class="clockbtns">
+          <button class="primary" id="startBtn" onclick="toggleClock()">▶ Start</button>
+          <button onclick="adjClock(-10)">−10s</button><button onclick="adjClock(-1)">−1s</button><button onclick="adjClock(1)">+1s</button><button onclick="adjClock(10)">+10s</button>
+          <button onclick="prevQuarter()">⏮ Prejšnja</button><button onclick="nextQuarter()">Naslednja četrtina ⏭</button>
+        </div>
+      </div>
+      <div class="teamblock">
+        <input class="tname" id="awayName" value="Gostje">
+        <div class="score" id="awayScore">0</div>
+        <div class="scorebtns">
+          <button onclick="addPts('away',1)">+1</button><button onclick="addPts('away',2)">+2</button><button onclick="addPts('away',3)">+3</button><button onclick="addPts('away',-1)">−1</button>
+        </div>
+        <div style="margin-top:6px;font-size:12px;color:var(--muted)">Timeouti: <span id="awayTO">0</span> <button class="ghostbtn" onclick="timeout('away')">Time-out</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h3>Hitri vnos prekrška / sodniške odločitve</h3>
+      <div class="field"><label class="f">Ekipa</label>
+        <select id="evTeam"><option value="home">Domači</option><option value="away">Gostje</option><option value="none">— (brez ekipe)</option></select>
+        <select id="evPlayer"><option value="">Igralec (izberi)</option></select>
+      </div>
+      <div class="chips" style="margin-bottom:8px">
+        <div class="chip" onclick="addStat('2m')">🏀 Met za 2 – zadetek</div>
+        <div class="chip" onclick="addStat('2x')">Met za 2 – zgrešen</div>
+        <div class="chip" onclick="addStat('3m')">🎯 Met za 3 – zadetek</div>
+        <div class="chip" onclick="addStat('3x')">Met za 3 – zgrešen</div>
+        <div class="chip" onclick="addStat('1m')">Prosti met – zadetek</div>
+        <div class="chip" onclick="addStat('1x')">Prosti met – zgrešen</div>
+      </div>
+      <div class="chips" style="margin-bottom:10px">
+        <div class="chip" onclick="addStat('oreb')">Napadalni skok</div>
+        <div class="chip" onclick="addStat('dreb')">Obrambni skok</div>
+        <div class="chip" onclick="addStat('ast')">Asistenca</div>
+        <div class="chip" onclick="addStat('stl')">Ukradena žoga</div>
+        <div class="chip" onclick="addStat('blk')">Blokada</div>
+        <div class="chip" onclick="addStat('tov')">Izguba žoge</div>
+      </div>
+      <div class="chips" id="foulChips"></div>
+      <h3 style="margin-top:14px">Sodniške odločitve</h3>
+      <div class="chips" id="refChips"></div>
+      <div class="field" style="margin-top:12px">
+        <label class="f">Poseben dogodek / prekršek (če ga ni na spisku)</label>
+        <textarea id="customEv" rows="2" style="width:100%" placeholder="Vpiši opis dogodka..."></textarea>
+        <button class="smallbtn" style="margin-top:6px" onclick="logCustom()">Zapiši dogodek</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Zapisnik tekme (live)</h3>
+      <div class="logtable">
+        <table><thead><tr><th>Čas</th><th>Č.</th><th>Ekipa</th><th>Dogodek</th><th></th></tr></thead>
+        <tbody id="logBody"></tbody></table>
+      </div>
+      <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <label style="font-size:12px"><input type="checkbox" id="confirmSheet"> Zapisnikar potrjuje, da je zapisnik pregledan in usklajen z rezultatom</label>
+      </div>
+      <div style="margin-top:6px;display:flex;gap:8px;flex-wrap:wrap">
+        <button class="ghostbtn" onclick="exportJSON()">⭳ Izvoz JSON</button>
+        <button class="ghostbtn" onclick="exportCSV()">⭳ Izvoz CSV (box score)</button>
+        <button class="ghostbtn" onclick="printSection('v-tekma')">🖨 Natisni / PDF zapisnik</button>
+        <button class="dangerbtn" onclick="finishGame()">✔ Zaključi in shrani tekmo v sezono</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h3>Igralci na tekmi – Domači</h3>
+      <div class="field"><input id="newHomeP" placeholder="Ime in priimek"><input id="newHomeNum" placeholder="#" style="width:50px"><button class="smallbtn" onclick="addPlayer('home')">Dodaj</button></div>
+      <div class="playerlist" id="homePlayers"></div>
+    </div>
+    <div class="card">
+      <h3>Igralci na tekmi – Gostje</h3>
+      <div class="field"><input id="newAwayP" placeholder="Ime in priimek"><input id="newAwayNum" placeholder="#" style="width:50px"><button class="smallbtn" onclick="addPlayer('away')">Dodaj</button></div>
+      <div class="playerlist" id="awayPlayers"></div>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Shot Chart – zemljevid metov (klikni mesto meta, nato izberi zadetek/zgrešen zgoraj)</h3>
+    <svg id="courtSvg" viewBox="0 0 500 470" style="width:100%;max-width:500px;background:var(--bg);border:1px solid var(--line);border-radius:8px" onclick="courtClick(event)">
+      <rect x="2" y="2" width="496" height="466" fill="none" stroke="var(--line)"/>
+      <circle cx="250" cy="422" r="60" fill="none" stroke="var(--line)"/>
+      <rect x="170" y="382" width="160" height="190" fill="none" stroke="var(--line)"/>
+      <circle cx="250" cy="60" r="40" fill="none" stroke="var(--line)"/>
+      <path d="M20,60 A230,230 0 0,0 480,60" fill="none" stroke="var(--line)"/>
+      <g id="shotDots"></g>
+    </svg>
+    <div style="font-size:12px;color:var(--muted);margin-top:4px" id="shotHint">Mesto meta ni izbrano – klikni na igrišče, nato pritisni gumb meta.</div>
+  </div>
+  <div class="card">
+    <h3>Ekipna statistika (živo)</h3>
+    <div id="teamStatsBox"></div>
+  </div>
+</div>
+
+<!-- SEZONA -->
+<div class="view" id="v-sezona">
+  <div class="card">
+    <h3>Sezona</h3>
+    <select id="seasonSel" onchange="renderStandings()"></select>
+    <button class="smallbtn" onclick="newSeason()">+ Nova sezona</button>
+  </div>
+  <div class="card">
+    <h3>Lestvica</h3>
+    <table class="standings"><thead><tr><th>#</th><th>Ekipa</th><th>OT</th><th>Z</th><th>P</th><th>Koši +</th><th>Koši −</th><th>Razlika</th><th>Točke</th></tr></thead>
+    <tbody id="standingsBody"></tbody></table>
+    <div style="margin-top:8px"><button class="ghostbtn" onclick="printSection('v-sezona')">🖨 Natisni / PDF lestvico</button></div>
+  </div>
+  <div class="card">
+    <h3>Grafični pregled – točke po ekipah</h3>
+    <div id="standingsChart" style="overflow-x:auto"></div>
+  </div>
+</div>
+
+<!-- EKIPE -->
+<div class="view" id="v-ekipe">
+  <div class="card">
+    <h3>Registrirane ekipe</h3>
+    <div class="field"><input id="newTeamName" placeholder="Ime ekipe"><button class="smallbtn" onclick="addTeam()">Dodaj ekipo</button></div>
+    <div id="teamsBody"></div>
+  </div>
+</div>
+
+<!-- ARHIV -->
+<div class="view" id="v-arhiv">
+  <div class="card">
+    <h3>Arhiv vseh tekem (vse sezone)</h3>
+    <table><thead><tr><th>Datum</th><th>Sezona</th><th>Tekma</th><th>Rezultat</th><th></th></tr></thead><tbody id="archiveBody"></tbody></table>
+    <div style="margin-top:8px"><button class="ghostbtn" onclick="printSection('v-arhiv')">🖨 Natisni / PDF arhiv</button></div>
+  </div>
+</div>
+
+<!-- NASTAVITVE -->
+<div class="view" id="v-nastavitve">
+  <div class="grid2">
+    <div class="card">
+      <h3>Klub / Liga podatki</h3>
+      <div class="field"><label class="f">Naziv lige / kluba</label><input id="setClubName" style="width:100%"></div>
+      <div class="field"><label class="f">Logo (naloži sliko)</label><input type="file" id="setLogo" accept="image/*"><div id="logoPrev" style="margin-top:6px"></div></div>
+      <div class="field"><label class="f">Barva poudarka</label><input type="color" id="setAccent" value="#ff7a1a"></div>
+      <div class="field"><label class="f">Dolžina četrtine (min)</label><input type="number" id="setQuarterLen" value="10" style="width:80px"></div>
+      <div class="field"><label class="f">Število četrtin</label><input type="number" id="setNumQuarters" value="4" style="width:80px"></div>
+      <div class="field"><label class="f">Št. timeoutov na ekipo</label><input type="number" id="setTOcount" value="5" style="width:80px"></div>
+      <button class="smallbtn" onclick="saveSettings()">Shrani nastavitve</button>
+    </div>
+    <div class="card">
+      <h3>Podatki in varnostna kopija</h3>
+      <p style="font-size:13px;color:var(--muted)">Vsi podatki (tekme, sezone, ekipe, nastavitve) se shranjujejo lokalno v tem brskalniku (localStorage). Iz varnostnih razlogov spletna aplikacija ne more sama neposredno pisati na GitHub, Google Drive ali C: disk – to ni omejitev tega programa, ampak splošno pravilo za vse spletne strani v brskalniku.</p>
+      <p style="font-size:13px;color:var(--muted)"><b>Priporočen postopek, ki dejansko deluje:</b> klikni "Izvozi vso bazo" in datoteko shrani neposredno v mapo, ki je sinhronizirana z Google Drive (Google Drive for Desktop) ali v lokalno kloniran GitHub repozitorij na C: disku – nato v GitHub Desktop narediš "commit + push" v svoj private repo. Tako imaš samodejno varnostno kopijo v oblaku brez ročnega nalaganja po spletu.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="ghostbtn" onclick="exportAll()">⭳ Izvozi vso bazo (JSON)</button>
+        <label class="ghostbtn" style="display:inline-block;cursor:pointer">⭱ Uvozi JSON<input type="file" id="importFile" accept=".json" style="display:none" onchange="importAll(event)"></label>
+      </div>
+    </div>
+  </div>
+</div>
+</main>
+<footer>KošarkaOS – zapisnik in informacijski sistem tekme • deluje brez povezave, podatki so shranjeni lokalno</footer>
+
+<script>
+let DB = JSON.parse(localStorage.getItem('kos_db')||'null') || {seasons:{}, teams:[], settings:{club:'',accent:'#ff7a1a',quarterLen:10,numQuarters:4,toCount:5,logo:''}};
+let CUR = null; // current game state
+let SECRETS = JSON.parse(localStorage.getItem('kos_secrets')||'null') || {};
+function saveSecrets(){ localStorage.setItem('kos_secrets', JSON.stringify(SECRETS)); }
+function openAdmin(){
+  document.getElementById('ghToken').value=SECRETS.ghToken||'';
+  document.getElementById('ghOwner').value=SECRETS.ghOwner||'';
+  document.getElementById('ghRepo').value=SECRETS.ghRepo||'';
+  document.getElementById('ghBranch').value=SECRETS.ghBranch||'main';
+  document.getElementById('ghPath').value=SECRETS.ghPath||'kosarka_baza.json';
+  document.getElementById('gdClientId').value=SECRETS.gdClientId||'';
+  document.getElementById('adminModal').classList.add('open');
+}
+function closeAdmin(){ document.getElementById('adminModal').classList.remove('open'); }
+function saveGithubSettings(){
+  SECRETS.ghToken=document.getElementById('ghToken').value.trim();
+  SECRETS.ghOwner=document.getElementById('ghOwner').value.trim();
+  SECRETS.ghRepo=document.getElementById('ghRepo').value.trim();
+  SECRETS.ghBranch=document.getElementById('ghBranch').value.trim()||'main';
+  SECRETS.ghPath=document.getElementById('ghPath').value.trim()||'kosarka_baza.json';
+  saveSecrets(); document.getElementById('ghStatus').textContent='Nastavitve shranjene.';
+}
+async function githubSync(){
+  saveGithubSettings();
+  const {ghToken,ghOwner,ghRepo,ghBranch,ghPath}=SECRETS;
+  const st=document.getElementById('ghStatus');
+  if(!ghToken||!ghOwner||!ghRepo){ st.textContent='Izpolni token, uporabnika in repozitorij.'; return; }
+  st.textContent='Nalagam...';
+  try{
+    const api=`https://api.github.com/repos/${ghOwner}/${ghRepo}/contents/${ghPath}`;
+    const headers={'Authorization':'Bearer '+ghToken,'Accept':'application/vnd.github+json'};
+    let sha=null;
+    const getRes=await fetch(api+'?ref='+encodeURIComponent(ghBranch),{headers});
+    if(getRes.status===200){ const j=await getRes.json(); sha=j.sha; }
+    const content=btoa(unescape(encodeURIComponent(JSON.stringify(DB,null,2))));
+    const putRes=await fetch(api,{method:'PUT',headers:{...headers,'Content-Type':'application/json'},
+      body:JSON.stringify({message:'Posodobitev baze – '+new Date().toISOString(), content, branch:ghBranch, sha:sha||undefined})});
+    if(putRes.ok){ st.textContent='✔ Uspešno naloženo na GitHub ('+new Date().toLocaleTimeString()+').'; }
+    else{ const e=await putRes.json().catch(()=>({})); st.textContent='Napaka: '+(e.message||putRes.status); }
+  }catch(err){ st.textContent='Napaka pri povezavi: '+err.message; }
+}
+
+let dirHandle=null;
+async function pickFolder(){
+  if(!window.showDirectoryPicker){ alert('Brskalnik ne podpira izbire mape (deluje v Chrome/Edge). Uporabi izvoz JSON namesto tega.'); return; }
+  try{ dirHandle=await window.showDirectoryPicker(); document.getElementById('folderStatus').textContent='Izbrana mapa: '+dirHandle.name; }
+  catch(err){ /* uporabnik je preklical */ }
+}
+async function saveToFolder(){
+  if(!dirHandle){ alert('Najprej izberi mapo.'); return; }
+  try{
+    const fh=await dirHandle.getFileHandle((SECRETS.ghPath||'kosarka_baza.json').split('/').pop(),{create:true});
+    const w=await fh.createWritable(); await w.write(JSON.stringify(DB,null,2)); await w.close();
+    document.getElementById('folderStatus').textContent='✔ Shranjeno v mapo ('+new Date().toLocaleTimeString()+').';
+  }catch(err){ document.getElementById('folderStatus').textContent='Napaka: '+err.message; }
+}
+
+let gdToken=null, tokenClient=null;
+function loadScript(src){ return new Promise((res,rej)=>{ const s=document.createElement('script'); s.src=src; s.onload=res; s.onerror=rej; document.head.appendChild(s); }); }
+async function gdLogin(){
+  const clientId=document.getElementById('gdClientId').value.trim();
+  if(!clientId){ alert('Vnesi Google OAuth Client ID.'); return; }
+  SECRETS.gdClientId=clientId; saveSecrets();
+  const st=document.getElementById('gdStatus'); st.textContent='Nalagam Google prijavo...';
+  try{
+    if(!window.google||!google.accounts) await loadScript('https://accounts.google.com/gsi/client');
+    tokenClient=google.accounts.oauth2.initTokenClient({client_id:clientId, scope:'https://www.googleapis.com/auth/drive.file',
+      callback:(resp)=>{ if(resp.access_token){ gdToken=resp.access_token; st.textContent='✔ Prijavljen v Google.'; } else st.textContent='Prijava neuspešna.'; }});
+    tokenClient.requestAccessToken();
+  }catch(err){ st.textContent='Napaka: '+err.message; }
+}
+async function gdSave(){
+  const st=document.getElementById('gdStatus');
+  if(!gdToken){ alert('Najprej se prijavi v Google.'); return; }
+  st.textContent='Nalagam na Drive...';
+  const boundary='kos_boundary_314159';
+  const metadata={name:'kosarka_baza.json', mimeType:'application/json'};
+  const body=`--${boundary}\r\nContent-Type: application/json\r\n\r\n${JSON.stringify(metadata)}\r\n--${boundary}\r\nContent-Type: application/json\r\n\r\n${JSON.stringify(DB)}\r\n--${boundary}--`;
+  try{
+    const res=await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart',{method:'POST',
+      headers:{'Authorization':'Bearer '+gdToken,'Content-Type':'multipart/related; boundary='+boundary}, body});
+    if(res.ok) st.textContent='✔ Shranjeno na Google Drive ('+new Date().toLocaleTimeString()+').';
+    else st.textContent='Napaka pri shranjevanju na Drive ('+res.status+').';
+  }catch(err){ st.textContent='Napaka: '+err.message; }
+}
+
+function save(){ localStorage.setItem('kos_db', JSON.stringify(DB)); }
+
+const FOULS = ["Osebni prekršek","Nešportni prekršek","Diskvalifikacijski prekršek","Tehnični prekršek – igralec","Tehnični prekršek – klop","Napad na koš (blok)","Dvojni prekršek","Prekršek v napadu","Prekršek pri metu za 2","Prekršek pri metu za 3"];
+const REFS = ["Prosti met dosojen","Met priznan","Met razveljavljen","Izpad žoge – vmet za domače","Izpad žoge – vmet za gostje","Sodniška napaka razveljavljena","Video pregled (challenge)","Odmor – zahtevan","Menjava igralca"];
+
+function fmt(t){let m=Math.floor(t/60),s=t%60;return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');}
+
+function newGameState(){
+  return {
+    home:{name:'Domači',score:0,to:0,players:[]}, away:{name:'Gostje',score:0,to:0,players:[]},
+    quarter:1, clock:DB.settings.quarterLen*60, running:false, log:[], seasonId:document.getElementById('seasonSel').value||null
+  };
+}
+
+function ensureSeason(){
+  if(Object.keys(DB.seasons).length===0){ DB.seasons['Sezona 2026/27']={teams:{}, games:[]}; }
+}
+function refreshSeasonSelect(){
+  const sel=document.getElementById('seasonSel'); sel.innerHTML='';
+  Object.keys(DB.seasons).forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;sel.appendChild(o);});
+}
+function newSeason(){
+  const name=prompt('Ime nove sezone (npr. 2027/28):'); if(!name) return;
+  DB.seasons[name]={teams:{}, games:[]}; save(); refreshSeasonSelect(); renderStandings();
+}
+
+function initChips(){
+  const fc=document.getElementById('foulChips'), rc=document.getElementById('refChips');
+  fc.innerHTML=''; FOULS.forEach(f=>{const b=document.createElement('div');b.className='chip';b.textContent=f;b.onclick=()=>logEvent('foul',f);fc.appendChild(b);});
+  rc.innerHTML=''; REFS.forEach(f=>{const b=document.createElement('div');b.className='chip';b.textContent=f;b.onclick=()=>logEvent('ref',f);rc.appendChild(b);});
+}
+
+function refreshPlayerSelect(){
+  const team=document.getElementById('evTeam').value; const sel=document.getElementById('evPlayer');
+  sel.innerHTML='<option value="">Igralec (izberi)</option>';
+  if(team==='home'||team==='away'){ CUR[team].players.forEach(p=>{const o=document.createElement('option');o.value=p.num+' '+p.name;o.textContent='#'+p.num+' '+p.name;sel.appendChild(o);}); }
+}
+
+function logEvent(type,text){
+  const team=document.getElementById('evTeam').value;
+  const player=document.getElementById('evPlayer').value;
+  const teamLabel = team==='home'?CUR.home.name:(team==='away'?CUR.away.name:'—');
+  CUR.log.unshift({time:fmt(CUR.clock),q:CUR.quarter,team:teamLabel,type,text:(player?player+' – ':'')+text});
+  if(type==='foul' && (team==='home'||team==='away')){
+    if(!CUR[team].teamFouls) CUR[team].teamFouls={};
+    CUR[team].teamFouls[CUR.quarter]=(CUR[team].teamFouls[CUR.quarter]||0)+1;
+    if(player){
+      const num=player.split(' ')[0];
+      const p=CUR[team].players.find(pl=>pl.num===num);
+      if(p){ p.fouls=(p.fouls||0)+1; if(p.fouls>=5) alert('Igralec #'+p.num+' '+p.name+' je dosegel 5 prekrškov – DISKVALIFIKACIJA.'); }
+    }
+    if(CUR[team].teamFouls[CUR.quarter]>=5) logEvent('ref','Ekipa v bonusu (5+ ekipnih prekrškov v četrtini)');
+    renderPlayers();
+  }
+  renderLog();
+}
+function logCustom(){
+  const t=document.getElementById('customEv').value.trim(); if(!t) return;
+  logEvent('other', t); document.getElementById('customEv').value='';
+}
+function renderLog(){
+  const body=document.getElementById('logBody'); body.innerHTML='';
+  CUR.log.forEach((e,i)=>{
+    const tr=document.createElement('tr');
+    const tagClass = e.type==='foul'?'foul':(e.type==='ref'?'ref':(e.type==='pts'?'pts':'other'));
+    tr.innerHTML=`<td>${e.time}</td><td>${e.q}</td><td>${e.team}</td><td><span class="tag ${tagClass}">${e.type}</span> ${e.text}</td><td><button class="rowbtn" onclick="delLog(${i})">✕</button></td>`;
+    body.appendChild(tr);
+  });
+}
+function delLog(i){ CUR.log.splice(i,1); renderLog(); }
+
+let pendingShot=null;
+function courtClick(e){
+  const svg=document.getElementById('courtSvg'); const r=svg.getBoundingClientRect();
+  const x=(e.clientX-r.left)/r.width*500, y=(e.clientY-r.top)/r.height*470;
+  pendingShot={x,y};
+  document.getElementById('shotHint').textContent='Mesto izbrano – zdaj pritisni gumb meta (2/3/PM zadetek ali zgrešen).';
+}
+function plotShot(made,three){
+  if(!pendingShot) return;
+  const dot=document.createElementNS('http://www.w3.org/2000/svg','circle');
+  dot.setAttribute('cx',pendingShot.x); dot.setAttribute('cy',pendingShot.y); dot.setAttribute('r',6);
+  dot.setAttribute('fill', made? 'var(--good)':'var(--bad)'); dot.setAttribute('stroke','#fff'); dot.setAttribute('stroke-width','1');
+  document.getElementById('shotDots').appendChild(dot);
+  pendingShot=null; document.getElementById('shotHint').textContent='Mesto meta ni izbrano – klikni na igrišče, nato pritisni gumb meta.';
+}
+function addPtsRaw(side,pts){ CUR[side].score=Math.max(0,CUR[side].score+pts); document.getElementById(side+'Score').textContent=CUR[side].score; }
+function addStat(kind){
+  const team=document.getElementById('evTeam').value;
+  const playerVal=document.getElementById('evPlayer').value;
+  if(team!=='home'&&team!=='away'){ alert('Najprej izberi ekipo.'); return; }
+  if(!playerVal){ alert('Najprej izberi igralca.'); return; }
+  const num=playerVal.split(' ')[0];
+  const p=CUR[team].players.find(pl=>pl.num===num); if(!p) return;
+  let label='', isPts=false;
+  if(kind==='2m'){p.fga2++;p.fgm2++;p.pts+=2;addPtsRaw(team,2);label='Met za 2 – ZADETEK';isPts=true;}
+  else if(kind==='2x'){p.fga2++;label='Met za 2 – zgrešen';}
+  else if(kind==='3m'){p.fga3++;p.fgm3++;p.pts+=3;addPtsRaw(team,3);label='Met za 3 – ZADETEK';isPts=true;}
+  else if(kind==='3x'){p.fga3++;label='Met za 3 – zgrešen';}
+  else if(kind==='1m'){p.fta++;p.ftm++;p.pts+=1;addPtsRaw(team,1);label='Prosti met – ZADETEK';isPts=true;}
+  else if(kind==='1x'){p.fta++;label='Prosti met – zgrešen';}
+  else if(kind==='oreb'){p.oreb=(p.oreb||0)+1;label='Napadalni skok';}
+  else if(kind==='dreb'){p.dreb=(p.dreb||0)+1;label='Obrambni skok';}
+  else if(kind==='ast'){p.ast++;label='Asistenca';}
+  else if(kind==='stl'){p.stl++;label='Ukradena žoga';}
+  else if(kind==='blk'){p.blk++;label='Blokada';}
+  else if(kind==='tov'){p.tov++;label='Izguba žoge';}
+  if(kind==='2m'||kind==='2x'||kind==='3m'||kind==='3x'||kind==='1m'||kind==='1x'){ plotShot(kind.includes('m'), kind[0]==='3'); }
+  logEvent(isPts?'pts':'stat', label);
+  renderPlayers();
+}
+function addPts(side,pts){
+  CUR[side].score=Math.max(0,CUR[side].score+pts);
+  document.getElementById(side+'Score').textContent=CUR[side].score;
+  if(pts>0) logEvent('pts', (pts+' točke'));
+}
+function timeout(side){
+  const max=DB.settings.toCount;
+  if(CUR[side].to<max){ CUR[side].to++; document.getElementById(side+'TO').textContent=CUR[side].to; logEvent('ref','Time-out izkoriščen'); }
+  else alert('Ekipa je izkoristila vse time-oute.');
+}
+
+let timerHandle=null;
+function toggleClock(){
+  CUR.running=!CUR.running;
+  document.getElementById('startBtn').textContent = CUR.running? '⏸ Stop':'▶ Start';
+  document.getElementById('startBtn').className = CUR.running? 'stop':'primary';
+  if(CUR.running){ timerHandle=setInterval(()=>{ if(CUR.clock>0){CUR.clock--; updateClock(); tickPlayers();} else {toggleClock();} },1000); }
+  else clearInterval(timerHandle);
+}
+function tickPlayers(){
+  ['home','away'].forEach(side=>{ CUR[side].players.forEach(p=>{ if(p.onCourt) p.secs=(p.secs||0)+1; }); });
+  if(CUR.clock%10===0) renderPlayers();
+}
+function updateClock(){ document.getElementById('clockDisp').textContent=fmt(CUR.clock); }
+function adjClock(s){ CUR.clock=Math.max(0,CUR.clock+s); updateClock(); }
+function prevQuarter(){
+  if(CUR.quarter<=1) return;
+  CUR.quarter--; document.getElementById('qPill').textContent=CUR.quarter+'. četrtina';
+  logEvent('ref','Vrnitev na '+CUR.quarter+'. četrtino (sodniški popravek)');
+}
+function nextQuarter(){
+  logEvent('ref', 'Konec '+CUR.quarter+'. četrtine');
+  CUR.quarter++; document.getElementById('qPill').textContent=CUR.quarter+'. četrtina';
+  CUR.clock=DB.settings.quarterLen*60; updateClock();
+  if(CUR.running) toggleClock();
+}
+
+function addPlayer(side){
+  const nameEl=document.getElementById('new'+(side==='home'?'Home':'Away')+'P');
+  const numEl=document.getElementById('new'+(side==='home'?'Home':'Away')+'Num');
+  const name=nameEl.value.trim(); const num=numEl.value.trim()||'-';
+  if(!name) return;
+  CUR[side].players.push({name,num,pts:0,fouls:0,oreb:0,dreb:0,ast:0,stl:0,blk:0,tov:0,fga2:0,fgm2:0,fga3:0,fgm3:0,fta:0,ftm:0,secs:0,onCourt:false,captain:false,start5:false});
+  nameEl.value=''; numEl.value=''; renderPlayers(); refreshPlayerSelect();
+}
+function eff(p){ return (p.pts+ (p.oreb||0)+(p.dreb||0)+p.ast+p.stl+p.blk) - ((p.fga2-p.fgm2)+(p.fga3-p.fgm3)+(p.fta-p.ftm)+p.tov+p.fouls); }
+function pct(m,a){ return a>0? Math.round(m/a*100)+'%':'–'; }
+function renderPlayers(){
+  ['home','away'].forEach(side=>{
+    const box=document.getElementById(side+'Players'); box.innerHTML='';
+    CUR[side].players.forEach((p,i)=>{
+      const row=document.createElement('div'); row.className='plrow';
+      const min=fmt(p.secs||0);
+      row.innerHTML=`<input type="checkbox" title="V igri" ${p.onCourt?'checked':''} onchange="toggleOnCourt('${side}',${i})">
+      <label style="font-size:10px" title="Začetna peterka"><input type="checkbox" ${p.start5?'checked':''} onchange="CUR['${side}'].players[${i}].start5=this.checked">5</label>
+      <label style="font-size:10px" title="Kapetan"><input type="checkbox" ${p.captain?'checked':''} onchange="CUR['${side}'].players[${i}].captain=this.checked">C</label>
+      #${p.num}<span class="pname">${p.name}</span><span style="font-size:10.5px;color:var(--muted)">T:${p.pts} NS:${p.oreb||0} OS:${p.dreb||0} A:${p.ast} U:${p.stl} B:${p.blk} IŽ:${p.tov} PF:${p.fouls} MIN:${min} EFF:${eff(p)}</span><button class="rowbtn" onclick="delPlayer('${side}',${i})">✕</button>`;
+      box.appendChild(row);
+    });
+  });
+  renderTeamStats();
+}
+function toggleOnCourt(side,i){
+  const p=CUR[side].players[i]; p.onCourt=!p.onCourt;
+  logEvent('sub', (p.onCourt?'Vstop v igro: ':'Izstop iz igre: ')+'#'+p.num+' '+p.name);
+  renderPlayers();
+}
+function renderTeamStats(){
+  const box=document.getElementById('teamStatsBox'); if(!box) return;
+  const sum=(arr,k)=>arr.reduce((s,p)=>s+(p[k]||0),0);
+  let html='';
+  [['home',CUR.home],['away',CUR.away]].forEach(([side,t])=>{
+    const P=t.players;
+    html+=`<table style="margin-bottom:10px"><thead><tr><th colspan="9">${t.name}</th></tr><tr><th>Točke</th><th>NS/OS</th><th>Asist.</th><th>Ukr.</th><th>Blok.</th><th>Izg.žoge</th><th>Osebni pr.</th><th>Met 2/3/PM</th><th>%2 · %3 · %PM</th></tr></thead>
+    <tbody><tr><td>${sum(P,'pts')}</td><td>${sum(P,'oreb')}/${sum(P,'dreb')}</td><td>${sum(P,'ast')}</td><td>${sum(P,'stl')}</td><td>${sum(P,'blk')}</td><td>${sum(P,'tov')}</td><td>${sum(P,'fouls')}</td><td>${sum(P,'fgm2')}/${sum(P,'fga2')} · ${sum(P,'fgm3')}/${sum(P,'fga3')} · ${sum(P,'ftm')}/${sum(P,'fta')}</td><td>${pct(sum(P,'fgm2'),sum(P,'fga2'))} · ${pct(sum(P,'fgm3'),sum(P,'fga3'))} · ${pct(sum(P,'ftm'),sum(P,'fta'))}</td></tr></tbody></table>`;
+  });
+  box.innerHTML=html;
+}
+function delPlayer(side,i){ CUR[side].players.splice(i,1); renderPlayers(); refreshPlayerSelect(); }
+
+function finishGame(){
+  if(!document.getElementById('confirmSheet').checked){ alert('Pred zaključkom mora zapisnikar potrditi, da je zapisnik pregledan in usklajen z rezultatom.'); return; }
+  if(!confirm('Zaključi tekmo in shrani v sezono?')) return;
+  ensureSeason();
+  const seasonId=document.getElementById('seasonSel').value;
+  const season=DB.seasons[seasonId];
+  const rec={date:document.getElementById('miDate').value||new Date().toISOString().slice(0,10), time:document.getElementById('miTime').value,
+    place:document.getElementById('miPlace').value, competition:document.getElementById('miComp').value,
+    referees:document.getElementById('miRefs').value, delegate:document.getElementById('miDeleg').value, scorer:document.getElementById('miScorer').value,
+    coachHome:document.getElementById('miCoachH').value, coachAway:document.getElementById('miCoachA').value,
+    home:CUR.home.name, away:CUR.away.name,
+    homeScore:CUR.home.score, awayScore:CUR.away.score, log:CUR.log, homePlayers:CUR.home.players, awayPlayers:CUR.away.players};
+  season.games.push(rec);
+  [CUR.home.name, CUR.away.name].forEach(n=>{ if(!season.teams[n]) season.teams[n]={w:0,l:0,pf:0,pa:0}; });
+  const h=season.teams[CUR.home.name], a=season.teams[CUR.away.name];
+  h.pf+=CUR.home.score; h.pa+=CUR.away.score; a.pf+=CUR.away.score; a.pa+=CUR.home.score;
+  if(CUR.home.score>CUR.away.score){h.w++; a.l++;} else {a.w++; h.l++;}
+  save(); alert('Tekma shranjena v sezono.'); renderStandings(); renderArchive();
+  CUR=newGameState(); resetGameUI();
+}
+function resetGameUI(){
+  document.getElementById('homeName').value=CUR.home.name; document.getElementById('awayName').value=CUR.away.name;
+  document.getElementById('homeScore').textContent=0; document.getElementById('awayScore').textContent=0;
+  document.getElementById('homeTO').textContent=0; document.getElementById('awayTO').textContent=0;
+  document.getElementById('qPill').textContent='1. četrtina'; updateClock(); renderLog(); renderPlayers(); refreshPlayerSelect();
+  document.getElementById('shotDots').innerHTML=''; document.getElementById('confirmSheet').checked=false;
+}
+
+function renderStandings(){
+  const seasonId=document.getElementById('seasonSel').value; const season=DB.seasons[seasonId];
+  const body=document.getElementById('standingsBody'); body.innerHTML=''; if(!season) return;
+  const rows=Object.entries(season.teams).map(([name,t])=>({name,...t,gp:t.w+t.l,diff:t.pf-t.pa,pts:t.w*2+t.l*1}));
+  rows.sort((a,b)=> b.pts-a.pts || b.diff-a.diff);
+  rows.forEach((r,i)=>{
+    const tr=document.createElement('tr'); if(i<3) tr.className='top3';
+    tr.innerHTML=`<td>${i+1}</td><td>${r.name}</td><td>${r.gp}</td><td>${r.w}</td><td>${r.l}</td><td>${r.pf}</td><td>${r.pa}</td><td>${r.diff>0?'+':''}${r.diff}</td><td>${r.pts}</td>`;
+    body.appendChild(tr);
+  });
+  renderChart(rows);
+}
+function renderArchive(){
+  const body=document.getElementById('archiveBody'); body.innerHTML='';
+  Object.entries(DB.seasons).forEach(([sid,season])=>{
+    season.games.forEach((g,i)=>{
+      const tr=document.createElement('tr');
+      const gid=sid.replace(/[^a-zA-Z0-9]/g,'')+'_'+i;
+      tr.innerHTML=`<td>${g.date}</td><td>${sid}</td><td>${g.home} – ${g.away}</td><td>${g.homeScore}:${g.awayScore}</td><td><button class="ghostbtn" onclick="toggleBox('${gid}')">Statistika</button> <button class="rowbtn" onclick='delGame("${sid}",${i})'>✕</button></td>`;
+      body.appendChild(tr);
+      const dtr=document.createElement('tr'); dtr.id='box_'+gid; dtr.style.display='none';
+      const mkTbl=(name,players)=>`<b>${name}</b><table><thead><tr><th>#</th><th>Igralec</th><th>T</th><th>NS</th><th>OS</th><th>A</th><th>U</th><th>B</th><th>IŽ</th><th>PF</th><th>Met2</th><th>Met3</th><th>PM</th><th>Min</th><th>EFF</th></tr></thead><tbody>${(players||[]).map(p=>`<tr><td>${p.num}</td><td>${p.name}${p.captain?' (C)':''}</td><td>${p.pts}</td><td>${p.oreb||0}</td><td>${p.dreb||0}</td><td>${p.ast||0}</td><td>${p.stl||0}</td><td>${p.blk||0}</td><td>${p.tov||0}</td><td>${p.fouls}</td><td>${p.fgm2||0}/${p.fga2||0}</td><td>${p.fgm3||0}/${p.fga3||0}</td><td>${p.ftm||0}/${p.fta||0}</td><td>${fmt(p.secs||0)}</td><td>${eff(p)}</td></tr>`).join('')}</tbody></table>`;
+      dtr.innerHTML=`<td colspan="5">${mkTbl(g.home,g.homePlayers)}${mkTbl(g.away,g.awayPlayers)}</td>`;
+      body.appendChild(dtr);
+    });
+  });
+}
+function toggleBox(gid){ const el=document.getElementById('box_'+gid); el.style.display = el.style.display==='none'?'table-row':'none'; }
+function delGame(sid,i){ DB.seasons[sid].games.splice(i,1); save(); renderArchive(); }
+
+function renderTeams(){
+  const box=document.getElementById('teamsBody'); box.innerHTML='';
+  DB.teams.forEach((t,i)=>{
+    if(typeof t==='string') t=DB.teams[i]={name:t,players:[]}; // migracija starih podatkov
+    if(!t.players) t.players=[];
+    const div=document.createElement('div'); div.className='card'; div.style.marginBottom='10px';
+    div.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center">
+      <b>${t.name}</b>
+      <div><button class="ghostbtn" onclick="importTeam('home',${i})">→ Domači</button> <button class="ghostbtn" onclick="importTeam('away',${i})">→ Gostje</button> <button class="rowbtn" onclick="delTeam(${i})">✕</button></div>
+      </div>
+      <div class="field" style="margin-top:8px"><input id="tp_name_${i}" placeholder="Ime in priimek"><input id="tp_num_${i}" placeholder="#" style="width:50px"><button class="smallbtn" onclick="addTeamPlayer(${i})">Dodaj igralca</button></div>
+      <div id="tp_list_${i}"></div>`;
+    box.appendChild(div);
+    const list=div.querySelector('#tp_list_'+i);
+    t.players.forEach((p,j)=>{ const row=document.createElement('div'); row.className='plrow';
+      row.innerHTML=`#${p.num}<span class="pname">${p.name}</span><button class="rowbtn" onclick="delTeamPlayer(${i},${j})">✕</button>`; list.appendChild(row); });
+  });
+}
+function addTeam(){ const n=document.getElementById('newTeamName').value.trim(); if(!n) return; DB.teams.push({name:n,players:[]}); document.getElementById('newTeamName').value=''; save(); renderTeams(); }
+function delTeam(i){ DB.teams.splice(i,1); save(); renderTeams(); }
+function addTeamPlayer(i){
+  const nameEl=document.getElementById('tp_name_'+i), numEl=document.getElementById('tp_num_'+i);
+  const name=nameEl.value.trim(); const num=numEl.value.trim()||'-'; if(!name) return;
+  DB.teams[i].players.push({name,num}); save(); renderTeams();
+}
+function delTeamPlayer(i,j){ DB.teams[i].players.splice(j,1); save(); renderTeams(); }
+function importTeam(side,i){
+  const t=DB.teams[i];
+  document.getElementById(side+'Name').value=t.name; CUR[side].name=t.name;
+  CUR[side].players = t.players.map(p=>({name:p.name,num:p.num,pts:0,fouls:0,oreb:0,dreb:0,ast:0,stl:0,blk:0,tov:0,fga2:0,fgm2:0,fga3:0,fgm3:0,fta:0,ftm:0,secs:0,onCourt:false,captain:false,start5:false}));
+  renderPlayers(); refreshPlayerSelect();
+  alert('Ekipa "'+t.name+'" in njeni igralci so uvoženi kot '+(side==='home'?'domača ekipa':'gostje')+'. Preklopi na zavihek "Tekma v teku".');
+}
+
+function saveSettings(){
+  DB.settings.club=document.getElementById('setClubName').value;
+  DB.settings.accent=document.getElementById('setAccent').value;
+  DB.settings.quarterLen=+document.getElementById('setQuarterLen').value||10;
+  DB.settings.numQuarters=+document.getElementById('setNumQuarters').value||4;
+  DB.settings.toCount=+document.getElementById('setTOcount').value||5;
+  document.documentElement.style.setProperty('--accent', DB.settings.accent);
+  save(); alert('Nastavitve shranjene.');
+}
+document.getElementById('setLogo').addEventListener('change', e=>{
+  const f=e.target.files[0]; if(!f) return; const r=new FileReader();
+  r.onload=()=>{ DB.settings.logo=r.result; document.getElementById('logoPrev').innerHTML=`<img src="${r.result}" style="max-height:60px">`; save(); };
+  r.readAsDataURL(f);
+});
+
+function triggerDownload(filename, data, mime){
+  const blob=new Blob([data],{type:mime||'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),2000);
+}
+function exportCSV(){
+  let rows=[['Ekipa','#','Igralec','PTS','OREB','DREB','AST','STL','BLK','TOV','PF','2PM','2PA','3PM','3PA','FTM','FTA','MIN','EFF']];
+  ['home','away'].forEach(side=>{ CUR[side].players.forEach(p=>{
+    rows.push([CUR[side].name,p.num,p.name,p.pts,p.oreb||0,p.dreb||0,p.ast,p.stl,p.blk,p.tov,p.fouls,p.fgm2,p.fga2,p.fgm3,p.fga3,p.ftm,p.fta,fmt(p.secs||0),eff(p)]);
+  }); });
+  const csv=rows.map(r=>r.join(';')).join('\n');
+  triggerDownload('box_score.csv', csv, 'text/csv');
+}
+function exportJSON(){
+  const data=JSON.stringify(CUR,null,2);
+  triggerDownload('tekma_'+CUR.home.name+'_vs_'+CUR.away.name+'.json', data);
+}
+function exportAll(){
+  const data=JSON.stringify(DB,null,2);
+  triggerDownload('kosarka_baza.json', data);
+}
+function importAll(e){
+  const f=e.target.files[0]; if(!f) return; const r=new FileReader();
+  r.onload=()=>{ try{ DB=JSON.parse(r.result); save(); location.reload(); }catch(err){ alert('Napačna datoteka.'); } };
+  r.readAsText(f);
+}
+function printSheet(){ window.print(); }
+function printSection(viewId){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('printing'));
+  document.getElementById(viewId).classList.add('printing');
+  window.print();
+}
+function renderChart(rows){
+  const box=document.getElementById('standingsChart'); if(!box) return;
+  if(!rows.length){ box.innerHTML='<p style="color:var(--muted);font-size:13px">Ni podatkov.</p>'; return; }
+  const max=Math.max(...rows.map(r=>r.pts),1);
+  const w=Math.max(360,rows.length*70), h=200, bw=40;
+  let bars='';
+  rows.forEach((r,i)=>{
+    const bh=(r.pts/max)*150;
+    const x=20+i*70;
+    bars+=`<rect x="${x}" y="${170-bh}" width="${bw}" height="${bh}" rx="4" fill="var(--accent)"/><text x="${x+bw/2}" y="185" font-size="10" fill="var(--muted)" text-anchor="middle">${r.name.slice(0,8)}</text><text x="${x+bw/2}" y="${162-bh}" font-size="11" fill="var(--txt)" text-anchor="middle">${r.pts}</text>`;
+  });
+  box.innerHTML=`<svg viewBox="0 0 ${w} 200" width="${w}" height="200">${bars}</svg>`;
+}
+
+document.getElementById('evTeam').addEventListener('change', refreshPlayerSelect);
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active'); document.getElementById('v-'+t.dataset.v).classList.add('active');
+  if(t.dataset.v==='sezona'){ renderStandings(); } if(t.dataset.v==='arhiv'){ renderArchive(); } if(t.dataset.v==='ekipe'){ renderTeams(); }
+}));
+document.getElementById('themeBtn').addEventListener('click',()=>{
+  const cur=document.documentElement.getAttribute('data-theme');
+  document.documentElement.setAttribute('data-theme', cur==='light'?'dark':'light');
+});
+document.getElementById('homeName').addEventListener('input',e=>CUR.home.name=e.target.value);
+document.getElementById('awayName').addEventListener('input',e=>CUR.away.name=e.target.value);
+
+// init
+ensureSeason(); refreshSeasonSelect(); initChips();
+CUR=newGameState();
+document.getElementById('setClubName').value=DB.settings.club;
+document.getElementById('setAccent').value=DB.settings.accent;
+document.getElementById('setQuarterLen').value=DB.settings.quarterLen;
+document.getElementById('setNumQuarters').value=DB.settings.numQuarters;
+document.getElementById('setTOcount').value=DB.settings.toCount;
+document.documentElement.style.setProperty('--accent', DB.settings.accent);
+updateClock(); renderLog(); renderPlayers(); refreshPlayerSelect(); renderStandings(); renderArchive(); renderTeams();
+</script>
+</body>
+</html>
